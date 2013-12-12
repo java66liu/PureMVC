@@ -1,55 +1,29 @@
 #ifndef _OBSERVER_H
 #define _OBSERVER_H
 
-#include "IHandlerNotification.h"
-#include "ICommand.h"
+#include "MvcType.h"
 #include "IObserver.h"
-#include "INotification.h"
-#include "IController.h"
-
-using namespace Mvc::Interface;
 
 namespace Mvc
 {
     namespace Patterns
     {
+        using namespace Mvc::Interface;
+
         class Observer : public IObserver
         {
         public:
-            Observer(void* notifyContext)
-            {
-                m_notifyContext = notifyContext;
-            }
+            Observer(void* notifyContext);
 
-            void NotifyObserver(INotification* notification)
-            {
-                void* context;
+            void                NotifyObserver(INotification* notification);
 
-                context = getNotifyContext();
+            bool                CompareNotifyContext(void* obj);
 
-                IHandlerNotification* pHandlerNotification = (IHandlerNotification*)context;
-                if(0 != pHandlerNotification)
-                {
-                    pHandlerNotification->HandlerNotification(notification);
-                }
-            }
-
-            bool CompareNotifyContext(void* obj)
-            {
-                return m_notifyContext == obj;
-            }
-
-            void*            getNotifyContext()
-            {
-                return m_notifyContext;
-            }
-            void            setNotifyContext(void* aContext)
-            {
-                m_notifyContext = aContext;
-            }
+            void*               getNotifyContext();
+            void                setNotifyContext(void* aContext);
 
         private:
-            void*            m_notifyContext;
+            void*               m_notifyContext;
         };
     }
 }

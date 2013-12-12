@@ -4,69 +4,36 @@
 #include "Notifier.h"
 #include "IMediator.h"
 
-using namespace Mvc::Interface;
-using namespace Mvc::Patterns;
-
 namespace Mvc
 {
     namespace Patterns
     {
+        using namespace Mvc::Interface;
+
         class Mediator : public Notifier, public IMediator
         {
         public:
-            Mediator()
-            {
-                m_mediatorName = MEDIATOR_NAME_TYPE();
-                m_viewComponent = NULL;
-            }
+            Mediator(IFacade* facade);
 
-            Mediator(MEDIATOR_NAME_TYPE mediatorName)
-            {
-                m_mediatorName = mediatorName;
-                m_viewComponent = NULL;
-            }
+            Mediator(IFacade* facade, MEDIATOR_NAME_TYPE mediatorName);
 
-            Mediator(MEDIATOR_NAME_TYPE mediatorName, void* viewComponent)
-            {
-                m_mediatorName = mediatorName;
-                m_viewComponent = viewComponent;
-            }
+            Mediator(IFacade* facade, MEDIATOR_NAME_TYPE mediatorName, void* viewComponent);
 
-            vector<NOTIFICATION_NAME_TYPE> ListNotificationInterests()
-            {
-                vector<NOTIFICATION_NAME_TYPE> temp;
-                return temp;
-            }
+            std::vector<NOTIFICATION_NAME_TYPE> ListNotificationInterests();
 
-            void OnRegister()
-            {
-            }
+            void                                OnRegister();
 
-            void OnRemove()
-            {
-            }
+            void                                OnRemove();
 
-            MEDIATOR_NAME_TYPE getMediatorName()
-            {
-                return m_mediatorName;
-            }
+            MEDIATOR_NAME_TYPE                  getMediatorName();
 
-            void*    getViewComponent()
-            {
-                return m_viewComponent;
-            }
-            void    setViewComponent(void* aViewComponent)
-            {
-                m_viewComponent = aViewComponent;
-            }
+            void*                               getViewComponent();
+            void                                setViewComponent(void* aViewComponent);
 
-            void    HandlerNotification(INotification*)
-            {
-
-            }
+            void                                HandlerNotification(INotification*);
         protected:
-            MEDIATOR_NAME_TYPE    m_mediatorName;
-            void*            m_viewComponent;
+            MEDIATOR_NAME_TYPE                  m_mediatorName;
+            void*                               m_viewComponent;
         };
     }
 }

@@ -1,158 +1,72 @@
 #ifndef _FACADE_H
 #define _FACADE_H
 
+#include "INotification.h"
 #include "IFacade.h"
-#include "IController.h"
-#include "IModel.h"
-#include "IView.h"
-
-#include "Notification.h"
-#include "Controller.h"
-#include "Model.h"
-#include "View.h"
-
-using namespace Mvc::Interface;
-using namespace Mvc::Core;
 
 namespace Mvc
 {
+    namespace Interface
+    {
+        class IView;
+        class IModel;
+        class IController;
+    }
+
     namespace Patterns
     {
+        using namespace Interface;
+
         class Facade : public IFacade
         {
-        protected:
-            Facade()
-            {
-                m_controller = NULL;
-                m_model = NULL;
-                m_view = NULL;
-
-                InitializeFacade();
-            }
+        public:
+            Facade();
 
         public:
-            bool RegisterProxy(IProxy* proxy)
-            {
-                return m_model->RegisterProxy(proxy);
-            }
+            bool            RegisterProxy(IProxy* proxy);
 
-            IProxy* RetrieveProxy(PROXY_NAME_TYPE proxyName)
-            {
-                return m_model->RetrieveProxy(proxyName);
-            }
+            IProxy*         RetrieveProxy(PROXY_NAME_TYPE proxyName);
 
-            IProxy* RemoveProxy(PROXY_NAME_TYPE proxyName)
-            {
-                return m_model->RemoveProxy(proxyName);
-            }
-            bool HasProxy(PROXY_NAME_TYPE proxyName)
-            {
-                return m_model->HasProxy(proxyName);
-            }
+            IProxy*         RemoveProxy(PROXY_NAME_TYPE proxyName);
+            bool            HasProxy(PROXY_NAME_TYPE proxyName);
 
-            void RegisterCommand(NOTIFICATION_NAME_TYPE notificationName, void* commandType)
-            {
-                m_controller->RegisterCommand(notificationName, commandType);
-            }
+            void            RegisterCommand(NOTIFICATION_NAME_TYPE notificationName, void* commandType);
 
-            void RemoveCommand(NOTIFICATION_NAME_TYPE notificationName)
-            {
-                m_controller->RemoveCommand(notificationName);
-            }
+            void            RemoveCommand(NOTIFICATION_NAME_TYPE notificationName);
 
-            bool HasCommand(NOTIFICATION_NAME_TYPE notificationName)
-            {
-                return m_controller->HasCommand(notificationName);
-            }
+            bool            HasCommand(NOTIFICATION_NAME_TYPE notificationName);
 
-            void        RegisterObserver(NOTIFICATION_NAME_TYPE notificationName, IMediator* mediator)
-            {
-                return m_view->RegisterObserver(notificationName, mediator);
-            }
+            void            RegisterObserver(NOTIFICATION_NAME_TYPE notificationName, IMediator* mediator);
 
-            bool RegisterMediator(IMediator* mediator)
-            {
-                return m_view->RegisterMediator(mediator);
-            }
+            bool            RegisterMediator(IMediator* mediator);
 
-            IMediator* RetrieveMediator(MEDIATOR_NAME_TYPE mediatorName)
-            {
-                return m_view->RetrieveMediator(mediatorName);
-            }
+            IMediator*      RetrieveMediator(MEDIATOR_NAME_TYPE mediatorName);
 
-            IMediator* RemoveMediator(MEDIATOR_NAME_TYPE mediatorName)
-            {
-                return m_view->RemoveMediator(mediatorName);
-            }
+            IMediator*      RemoveMediator(MEDIATOR_NAME_TYPE mediatorName);
 
-            bool HasMediator(MEDIATOR_NAME_TYPE mediatorName)
-            {
-                return m_view->HasMediator(mediatorName);
-            }
+            bool            HasMediator(MEDIATOR_NAME_TYPE mediatorName);
 
-            void NotifyObservers(INotification* notification)
-            {
-                m_view->NotifyObservers(notification);
-            }
+            void            NotifyObservers(INotification* notification);
 
-            void SendNotification(NOTIFICATION_NAME_TYPE notificationName)
-            {
-                Notification notification(notificationName);
-                NotifyObservers(&notification);
-            }
+            void            SendNotification(NOTIFICATION_NAME_TYPE notificationName);
 
-            void SendNotification(NOTIFICATION_NAME_TYPE notificationName, void* body)
-            {
-                Notification notification(notificationName, body);
-                NotifyObservers(&notification);
-            }
-
-            static IFacade* Instance()
-            {
-                if (m_instance == NULL)
-                {
-                    m_instance = new Facade();
-                }
-
-                return m_instance;
-            }
-
-
-        public:
-            virtual void InitializeFacade()
-            {
-                InitializeModel();
-                InitializeView();
-                InitializeController();
-            }
+            void            SendNotification(NOTIFICATION_NAME_TYPE notificationName, void* body);
 
         protected:
-            virtual void InitializeController()
-            {
-                if (m_controller != NULL) return;
-                m_controller = Controller::Instance();
-            }
+            virtual void    InitializeFacade();
 
-            virtual void InitializeModel()
-            {
-                if (m_model != NULL) return;
-                m_model = Model::Instance();
-            }
+            virtual void    InitializeController();
 
-            virtual void InitializeView()
-            {
-                if (m_view != NULL) return;
-                m_view = View::Instance();
-            }
+            virtual void    InitializeModel();
+
+            virtual void    InitializeView();
 
         protected:
-            IController*        m_controller;
+            IController*    m_controller;
 
-            IModel*                m_model;
+            IModel*         m_model;
 
-            IView*                m_view;
-
-            static IFacade* m_instance;
+            IView*          m_view;
         };
     }
 }

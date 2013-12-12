@@ -1,7 +1,7 @@
 #ifndef _IMODEL_H
 #define _IMODEL_H
 
-#include "IProxy.h"
+#include "MvcType.h"
 
 namespace Mvc
 {
@@ -12,10 +12,10 @@ namespace Mvc
         class IModel
         {
         public:
-            virtual bool    RegisterProxy(IProxy*) = 0;
-            virtual IProxy*    RetrieveProxy(PROXY_NAME_TYPE proxyName) = 0;
-            virtual IProxy*    RemoveProxy(PROXY_NAME_TYPE proxyName) = 0;
-            virtual bool    HasProxy(PROXY_NAME_TYPE proxyName) = 0;
+            virtual bool        RegisterProxy(IProxy*) = 0;
+            virtual IProxy*     RetrieveProxy(PROXY_NAME_TYPE proxyName) = 0;
+            virtual IProxy*     RemoveProxy(PROXY_NAME_TYPE proxyName) = 0;
+            virtual bool        HasProxy(PROXY_NAME_TYPE proxyName) = 0;
         };
 }
 

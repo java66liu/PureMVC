@@ -1,49 +1,30 @@
 #ifndef _MACROCOMMAND_H
 #define _MACROCOMMAND_H
 
+#include <vector>
+
 #include "Notifier.h"
 #include "ICommand.h"
 
-using namespace Interface;
-using namespace Core;
-
-namespace Patterns
+namespace Mvc
 {
-class MacroCommand : public Notifier, public ICommand
-{
-public:
-    MacroCommand()
+    namespace Patterns
     {
-    }
+        using namespace Mvc::Interface;
 
-    void Execute(INotification* notification)
-    {
-        for(int i = 0; i < m_subCommands.size(); ++i)
+        class MacroCommand : public Notifier, public ICommand
         {
-            fnCreateICommand pfnCreateICommand = (fnCreateICommand)m_subCommands[i];
-            ICommand* commandInstance = (*pfnCreateICommand)();
-            if(commandInstance != NULL)
-            {
-                commandInstance->Execute(notification);
-                delete commandInstance;
-                commandInstance = NULL;
-            }
-        }
+        public:
+            MacroCommand(IFacade* facade);
+
+            void                Execute(INotification* notification);
+
+        protected:
+            void                AddSubCommand(void* commandType);
+
+        private:
+            std::vector<void*>  m_subCommands;
+        };
     }
-
-
-protected:
-    void AddSubCommand(void* commandType)
-    {
-        if(commandType != NULL)
-        {
-            m_subCommands.push_back(commandType);
-        }
-    }
-
-
-private:
-    vector<void*>        m_subCommands;
-};
 }
 #endif

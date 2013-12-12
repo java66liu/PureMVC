@@ -2,45 +2,28 @@
 #define _NOTIFICATION_H
 
 #include "INotification.h"
-#include <stddef.h>
-using namespace Mvc::Interface;
 
 namespace Mvc
 {
     namespace Patterns
     {
+        using namespace Mvc::Interface;
+
         class Notification : public INotification
         {
         public:
-            Notification(int name)
-            {
-                m_name = name;
-                m_body = NULL;
-            }
+            Notification(int name);
 
-            Notification(int name, void* body)
-            {
-                m_name = name;
-                m_body = body;
-            }
+            Notification(int name, void* body);
 
-            NOTIFICATION_NAME_TYPE    getName()
-            {
-                return m_name;
-            }
+            NOTIFICATION_NAME_TYPE  getName();
 
-            void    setBody(void* aBody)
-            {
-                m_body = aBody;
-            }
-            void*    getBody()
-            {
-                return m_body;
-            }
+            void                    setBody(void* aBody);
+            void*                   getBody();
 
         private:
-            NOTIFICATION_NAME_TYPE            m_name;
-            void*            m_body;
+            NOTIFICATION_NAME_TYPE  m_name;
+            void*                   m_body;
         };
     }
 }

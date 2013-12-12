@@ -1,109 +1,42 @@
 #ifndef _CONTROLLER_H
 #define _CONTROLLER_H
 
-#include "IController.h"
-#include "Observer.h"
-#include "View.h"
-#include "ICommand.h"
-
 #include <map>
-using namespace std;
-using namespace Mvc::Interface;
-using namespace Mvc::Core;
-using namespace Mvc::Patterns;
+
+#include "IController.h"
 
 namespace Mvc
 {
+    namespace Interface
+    {
+        class IView;
+        class INotification;
+    }
+
+    using namespace Interface;
+
     namespace Core
     {
         class Controller : public IController
         {
         public:
-            Controller()
-            {
-                InitializeController();
-            }
+            Controller();
 
-            void HandlerNotification(INotification* note)
-            {
-                map<NOTIFICATION_NAME_TYPE, void*>::iterator it = m_commandMap.find(note->getName());
+            void                                    HandlerNotification(INotification* note);
 
-                if(it == m_commandMap.end())
-                    return;
+            void                                    RegisterCommand(NOTIFICATION_NAME_TYPE notificationName, void* commandType);
 
-                fnCreateICommand commandType = (fnCreateICommand)it->second;
+            bool                                    HasCommand(NOTIFICATION_NAME_TYPE notificationName);
 
-                if(commandType != NULL)
-                {
-                    ICommand* commandInstance = (*commandType)();
-                    if(commandInstance != NULL)
-                    {
-                        commandInstance->Execute(note);
-                        delete commandInstance;
-                        commandInstance = NULL;
-                    }
-                }
+            void                                    RemoveCommand(NOTIFICATION_NAME_TYPE notificationName);
 
-            }
-            void RegisterCommand(NOTIFICATION_NAME_TYPE notificationName, void* commandType)
-            {
-                if (m_commandMap.find(notificationName) == m_commandMap.end())
-                {
-                    m_view->RegisterObserver(notificationName, new Observer((void*)this));
-                }
-
-                m_commandMap[notificationName] = commandType;
-            }
-
-            bool HasCommand(NOTIFICATION_NAME_TYPE notificationName)
-            {
-                return m_commandMap.find(notificationName) != m_commandMap.end();
-            }
-
-            void RemoveCommand(NOTIFICATION_NAME_TYPE notificationName)
-            {
-                map<NOTIFICATION_NAME_TYPE, void*>::iterator it = m_commandMap.find(notificationName);
-
-                if (it != m_commandMap.end())
-                {
-                    m_view->RemoveObserver(notificationName, this);
-                    m_commandMap.erase(it);
-                }
-            }
-
-            void* GetCommandFunc(NOTIFICATION_NAME_TYPE notificationName)
-            {
-                map<NOTIFICATION_NAME_TYPE, void*>::iterator it = m_commandMap.find(notificationName);
-                if (it != m_commandMap.end())
-                {
-                    return (*it).second;
-                }
-                else
-                {
-                    return NULL;
-                }
-            }
-
-            static IController* Instance()
-            {
-                if (m_instance == NULL)
-                {
-                    m_instance = new Controller();
-                }
-
-                return m_instance;
-            }
+            void*                                   GetCommandFunc(NOTIFICATION_NAME_TYPE notificationName);
 
         protected:
-            virtual void InitializeController()
-            {
-                m_view = View::Instance();
-            }
+            virtual void                            InitializeController();
 
-            IView*             m_view;
-            map<NOTIFICATION_NAME_TYPE, void*>    m_commandMap;
-
-            static IController* m_instance;
+            IView*                                  m_view;
+            std::map<NOTIFICATION_NAME_TYPE, void*> m_commandMap;
         };
     }
 }

@@ -2,40 +2,29 @@
 #define _NOTIFIER_H
 
 #include "INotifier.h"
-#include "IFacade.h"
-#include "Facade.h"
-using namespace Mvc::Interface;
 
 namespace Mvc
 {
+    namespace Interface
+    {
+        class IFacade;
+    }
+
     namespace Patterns
     {
+        using namespace Mvc::Interface;
+
         class Notifier : public INotifier
         {
         public:
-            Notifier()
-            {
-                m_facade = Patterns::Facade::Instance();
-            }
+            Notifier(IFacade* facade);
 
-            void SendNotification(NOTIFICATION_NAME_TYPE notificationName)
-            {
-                m_facade->SendNotification(notificationName);
-            }
+            void            SendNotification(NOTIFICATION_NAME_TYPE notificationName);
 
-            void SendNotification(NOTIFICATION_NAME_TYPE notificationName, void* body)
-            {
-                m_facade->SendNotification(notificationName, body);
-            }
-
-        protected:
-            IFacade*    getFacade()
-            {
-                return m_facade;
-            }
+            void            SendNotification(NOTIFICATION_NAME_TYPE notificationName, void* body);
 
         private:
-            IFacade*        m_facade;                    // = PureMVC.Patterns.Facade.Instance;    TODO
+            IFacade*        m_facade;
         };
     }
 }

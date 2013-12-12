@@ -4,60 +4,33 @@
 #include "Notifier.h"
 #include "IProxy.h"
 
-using namespace Mvc::Interface;
-
 namespace Mvc
 {
     namespace Patterns
     {
+        using namespace Mvc::Interface;
+
         class Proxy : public Notifier, public IProxy
         {
         public:
-            Proxy()
-            {
-                m_proxyName = PROXY_NAME_TYPE();
-                m_data = NULL;
-            }
+            Proxy(IFacade* facade);
 
-            Proxy(PROXY_NAME_TYPE proxyName)
-            {
-                m_proxyName = proxyName;
-                m_data = NULL;
-            }
+            Proxy(IFacade* facade, PROXY_NAME_TYPE proxyName);
 
-            Proxy(PROXY_NAME_TYPE proxyName, void* data)
-            {
-                m_proxyName = proxyName;
-                m_data = data;
-            }
+            Proxy(IFacade* facade, PROXY_NAME_TYPE proxyName, void* data);
 
-            virtual void OnRegister()
-            {
-            }
+            virtual void        OnRegister();
+            virtual void        OnRemove();
 
-            virtual void OnRemove()
-            {
-            }
-
-            PROXY_NAME_TYPE getProxyName()
-            {
-                return m_proxyName;
-            }
+            PROXY_NAME_TYPE     getProxyName();
 
         public:
-            void    setData(void* aData)
-            {
-                m_data = aData;
-            }
-            void*    getData()
-            {
-                return m_data;
-            }
+            void                setData(void* aData);
+            void*               getData();
 
         protected:
-            PROXY_NAME_TYPE            m_proxyName;
-            void*            m_data;
-
+            PROXY_NAME_TYPE     m_proxyName;
+            void*               m_data;
         };
     }
 }

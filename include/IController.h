@@ -1,9 +1,8 @@
 #ifndef _ICONTROLLER_H
 #define _ICONTROLLER_H
 
+#include "MvcType.h"
 #include "IHandlerNotification.h"
-#include "INotification.h"
-using namespace Mvc::Interface;
 
 namespace Mvc
 {
