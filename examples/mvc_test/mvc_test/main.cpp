@@ -1,6 +1,8 @@
 #include <iostream>
 using namespace std;
 
+#include "Facade.h"
+#include "ICommand.h"
 #include "Mediator.h"
 using namespace Mvc::Patterns;
 using namespace Mvc::Interface;
@@ -21,18 +23,20 @@ enum MEDIATOR_TYPE
     MT_MAX
 };
 
+IFacade* facade = NULL;
+
 class MyMediator : public Mediator
 {
 public:
-    MyMediator()
+    MyMediator(IFacade* facade) : Mediator(facade)
     {
         m_mediatorName = MT_ONE;
     }
 
 private:
-    vector<NOTIFICATION_NAME_TYPE>    ListNotificationInterests()
+    vector<Mvc::Interface::NOTIFICATION_NAME_TYPE>    ListNotificationInterests()
     {
-        vector<NOTIFICATION_NAME_TYPE> tempList;
+        vector<Mvc::Interface::NOTIFICATION_NAME_TYPE> tempList;
         tempList.push_back(NT_ONE);
 		tempList.push_back(NT_TWO);
         tempList.push_back(NT_TEST);
@@ -47,7 +51,7 @@ private:
         }
         else if(NT_TEST == pNotification->getName())
         {
-            Facade::Instance()->RemoveMediator(MT_TWO);
+            facade->RemoveMediator(MT_TWO);
         }
     }
 };
@@ -55,15 +59,15 @@ private:
 class MyTwoMediator : public Mediator
 {
 public:
-    MyTwoMediator()
+    MyTwoMediator(IFacade* facade) : Mediator(facade)
     {
         m_mediatorName = MT_TWO;
     }
 
 private:
-    vector<NOTIFICATION_NAME_TYPE>    ListNotificationInterests()
+    vector<Mvc::Interface::NOTIFICATION_NAME_TYPE>    ListNotificationInterests()
     {
-        vector<NOTIFICATION_NAME_TYPE> tempList;
+        vector<Mvc::Interface::NOTIFICATION_NAME_TYPE> tempList;
         tempList.push_back(NT_TWO);
         tempList.push_back(NT_TWO);
         tempList.push_back(NT_TEST);
@@ -81,7 +85,7 @@ private:
     }
 };
 
-class MyCommand : public ICommand
+class MyCommand : public Mvc::Interface::ICommand
 {
 private:
     void    Execute(INotification*)
@@ -90,27 +94,31 @@ private:
     }
 };
 
-ICommand* myCommandCreator()
+Mvc::Interface::ICommand* myCommandCreator()
 {
     return new MyCommand;
 }
 
 int main()
 {
-    Mvc::Patterns::Facade::Instance()->RegisterMediator(new MyMediator());
-    Mvc::Patterns::Facade::Instance()->RegisterMediator(new MyTwoMediator());
+    facade = new Mvc::Patterns::Facade;
+
+    facade->RegisterMediator(new MyMediator(facade));
+    facade->RegisterMediator(new MyTwoMediator(facade));
     
     // RegisterCommand 第二个参数必须为函数指针,用于框架中调用此回调以创建派生类Command对象
     // 且当创建的对象调用Execute函数后,会被摧毁
-    Mvc::Patterns::Facade::Instance()->RegisterCommand(NT_THREE, myCommandCreator);
-    Mvc::Patterns::Facade::Instance()->RegisterCommand(NT_THREE, myCommandCreator);
+    facade->RegisterCommand(NT_THREE, myCommandCreator);
+    facade->RegisterCommand(NT_THREE, myCommandCreator);
 
 
-    Mvc::Patterns::Facade::Instance()->SendNotification(NT_THREE, NULL);
+    facade->SendNotification(NT_THREE, NULL);
 
-    Mvc::Patterns::Facade::Instance()->SendNotification(NT_ONE, NULL);
-    Mvc::Patterns::Facade::Instance()->SendNotification(NT_TWO, NULL);
-    Mvc::Patterns::Facade::Instance()->SendNotification(NT_TEST, NULL);
+    facade->SendNotification(NT_ONE, NULL);
+    facade->SendNotification(NT_TWO, NULL);
+    facade->SendNotification(NT_TEST, NULL);
+
+    delete facade;
 
     cin.get();
     return 0;

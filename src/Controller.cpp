@@ -16,6 +16,18 @@ Controller::Controller()
     InitializeController();
 }
 
+Controller::~Controller()
+{
+    std::map<NOTIFICATION_NAME_TYPE, void*> tmp(m_commandMap);
+    for(std::map<NOTIFICATION_NAME_TYPE, void*>::iterator it = tmp.begin(); it != tmp.end(); ++it)
+    {
+        RemoveCommand(it->first);
+    }
+
+    delete m_view;
+    m_view = NULL;
+}
+
 void Controller::HandlerNotification(INotification* note)
 {
     std::map<NOTIFICATION_NAME_TYPE, void*>::iterator it = m_commandMap.find(note->getName());

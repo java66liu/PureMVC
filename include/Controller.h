@@ -22,6 +22,8 @@ namespace Mvc
         public:
             Controller();
 
+            ~Controller();
+
             void                                    HandlerNotification(INotification* note);
 
             void                                    RegisterCommand(NOTIFICATION_NAME_TYPE notificationName, void* commandType);

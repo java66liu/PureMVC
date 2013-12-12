@@ -23,6 +23,7 @@ namespace Mvc
         {
         public:
             View();
+            ~View();
 
         protected:
 
@@ -47,7 +48,9 @@ namespace Mvc
 
         protected:
             std::map<MEDIATOR_NAME_TYPE, IMediator*>                        m_mediatorMap;
-            std::map<NOTIFICATION_NAME_TYPE, std::vector<IObserver*>*>      m_observerMap;
+
+            typedef std::vector<std::shared_ptr<IObserver> > OBSERVER_LIST_TYPE;
+            std::map<NOTIFICATION_NAME_TYPE, OBSERVER_LIST_TYPE*>           m_observerMap;
         };
     }
 }

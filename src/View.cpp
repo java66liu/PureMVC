@@ -12,9 +12,17 @@ View::View()
     InitializeView();
 }
 
+View::~View()
+{
+    std::map<MEDIATOR_NAME_TYPE, IMediator*> tmp(m_mediatorMap);
+    for each(auto &i in tmp)
+    {
+        RemoveMediator(i.first);
+    }
+}
+
 void View::RegisterObserver(NOTIFICATION_NAME_TYPE notificationName, IMediator* mediator)
 {
-    /*  TODO::所有观察者可以考虑为值对象   */
     IObserver* observer = new Observer((void*)mediator);
     if(NULL != observer)
     {
@@ -26,37 +34,33 @@ void View::RegisterObserver(NOTIFICATION_NAME_TYPE notificationName, IObserver* 
 {
     if (m_observerMap.find(notificationName) == m_observerMap.end())
     {
-        m_observerMap[notificationName] = new std::vector<IObserver*>();
+        m_observerMap[notificationName] = new OBSERVER_LIST_TYPE;
     }
 
-    m_observerMap[notificationName]->push_back(observer);
+    m_observerMap[notificationName]->push_back(std::shared_ptr<IObserver>(observer));
 }
 
 void View::NotifyObservers(INotification* notification)
 {
-    std::map<NOTIFICATION_NAME_TYPE, std::vector<IObserver*>*>::iterator it = m_observerMap.find(notification->getName());
+    std::map<NOTIFICATION_NAME_TYPE, OBSERVER_LIST_TYPE*>::iterator it = m_observerMap.find(notification->getName());
 
     if (it != m_observerMap.end())
     {
-        std::vector<IObserver*>* observers = it->second;
+        OBSERVER_LIST_TYPE* observers = it->second;
 
-        if (observers != NULL)
+        std::vector<std::weak_ptr<IObserver> > tmp;
+
+        for each(auto &i in *observers)
         {
-            std::vector<IObserver*>::iterator it = observers->begin();
-            for(size_t i = 0; i < observers->size(); )
+            tmp.push_back(i);
+        }
+
+        for each(auto &i in tmp)
+        {
+            auto r = i.lock();
+            if(r)
             {
-                IObserver* observer = (*observers)[i];
-
-                if(observer == NULL || observer->getNotifyContext() == NULL)
-                {
-                    it = observers->erase(it);
-                    delete observer;
-                    continue;
-                }
-
-                observer->NotifyObserver(notification);
-                ++i;
-                ++it;
+                r->NotifyObserver(notification);
             }
         }
     }
@@ -64,20 +68,31 @@ void View::NotifyObservers(INotification* notification)
 
 void View::RemoveObserver(NOTIFICATION_NAME_TYPE notificationName, void* notifyContext)
 {
-    std::map<NOTIFICATION_NAME_TYPE, std::vector<IObserver*>*>::iterator it = m_observerMap.find(notificationName);
+    std::map<NOTIFICATION_NAME_TYPE, OBSERVER_LIST_TYPE*>::iterator it = m_observerMap.find(notificationName);
     if(it != m_observerMap.end())
     {
-        std::vector<IObserver*>* observers = it->second;
+        OBSERVER_LIST_TYPE* observers = it->second;
 
-        for(size_t i = 0; i < observers->size(); ++i)
         {
-            IObserver* observer = (*observers)[i];
-            if (observer->CompareNotifyContext(notifyContext))
+            for(OBSERVER_LIST_TYPE::iterator it = observers->begin(); it != observers->end(); )
             {
-                /*  设置为无效状态 */
-                observer->setNotifyContext(NULL);
-                break;
+                auto& i = *it;
+                if(i->CompareNotifyContext(notifyContext))
+                {
+                    i.reset();
+                    it = observers->erase(it);
+                }
+                else
+                {
+                    ++it;
+                }
             }
+        }
+
+        if(observers->empty())
+        {
+            m_observerMap.erase(it);
+            delete observers;
         }
     }
 }

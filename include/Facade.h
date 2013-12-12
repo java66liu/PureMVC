@@ -21,6 +21,7 @@ namespace Mvc
         {
         public:
             Facade();
+            ~Facade();
 
         public:
             bool            RegisterProxy(IProxy* proxy);

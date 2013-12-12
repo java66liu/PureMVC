@@ -18,6 +18,18 @@ Facade::Facade()
     InitializeFacade();
 }
 
+Facade::~Facade()
+{
+    delete m_controller;
+    m_controller = NULL;
+
+    delete m_view;
+    m_view = NULL;
+
+    delete m_model;
+    m_model = NULL;
+}
+
 bool Facade::RegisterProxy(IProxy* proxy)
 {
     return m_model->RegisterProxy(proxy);
